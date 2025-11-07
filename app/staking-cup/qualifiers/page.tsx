@@ -5,14 +5,14 @@ import SiteHeader from '@/components/SiteHeader';
 
 export default function Page() {
   return (
-    <main className="flex justify-center py-0 px-0">
-      <section className="relative w-[1440px] h-[2449px]">
+    <main className="relative py-0 px-0">
+      <section className="relative w-full min-h-[2449px]">
         <Image
           src="/assets/hero-Qua.png"
           alt="Somnia Staking Cup – Qualifiers"
           fill
           priority
-          sizes="1440px"
+          sizes="100vw"
           className="object-cover"
         />
         <div className="absolute left-0 top-0 w-full">

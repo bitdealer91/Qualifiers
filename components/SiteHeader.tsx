@@ -12,7 +12,7 @@ export default function SiteHeader() {
 
   return (
     <header className="w-full flex items-center justify-center">
-      <div className="w-[1440px] px-6 py-6 flex items-center justify-end">
+      <div className="max-w-[1440px] w-full px-6 py-6 flex items-center justify-end">
         {/* Actions */}
         <div className="flex items-center gap-3">
           <button

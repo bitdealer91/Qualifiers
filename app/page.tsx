@@ -4,7 +4,7 @@ export default function Page() {
       {/* Hero background */}
       <section className="relative md:h-[1053px] min-h-[720px]">
         <div
-          className="absolute inset-0 -z-10 bg-center bg-no-repeat bg-cover"
+          className="absolute inset-0 -z-10 bg-top bg-no-repeat bg-contain"
           style={{ backgroundImage: "url('/assets/hero-QuaEnt.png')" }}
         />
 
