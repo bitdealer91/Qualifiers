@@ -598,9 +598,9 @@ export function DelegateModal({
             />
             {/* Show remaining capacity for selected validator */}
             {remainingCapacity && (
-              <div className="text-xs text-gray-600 mt-1">
+              <div className="text-xs mt-2 text-white/90">
                 Maximum additional stake allowed:{" "}
-                <span className="font-medium text-green-600">
+                <span className="ml-1 font-semibold text-[#d9ff00] [text-shadow:#000_0px_1px_0px]">
                   {remainingCapacity} SOMI
                 </span>
               </div>
