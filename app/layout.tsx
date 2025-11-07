@@ -8,7 +8,10 @@ const bangers = Bangers({ weight: '400', subsets: ['latin'], variable: '--font-b
 
 export const metadata: Metadata = {
   title: 'Somnia Staking Cup – Qualifiers',
-  description: 'Stake, compete, win. Qualifiers leaderboard.'
+  description: 'Stake, compete, win. Qualifiers leaderboard.',
+  icons: {
+    icon: '/somnia-logo.svg'
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

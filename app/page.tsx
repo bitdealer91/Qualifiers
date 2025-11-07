@@ -15,7 +15,7 @@ export default function Page() {
           {/* Join button (positioned similar to Figma/landing) */}
           <div
             className="hidden md:block"
-            style={{ position: 'absolute', left: '50%', top: '910px', transform: 'translateX(-50%)', zIndex: 10 }}
+            style={{ position: 'absolute', left: '50%', top: '950px', transform: 'translateX(-50%)', zIndex: 10 }}
           >
             <a
               href="/staking-cup/qualifiers"
