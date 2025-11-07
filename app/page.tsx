@@ -5,11 +5,13 @@ export default function Page() {
       <section className="relative md:h-[1053px] min-h-[720px]">
         <div
           className="absolute inset-0 -z-10 bg-center bg-no-repeat bg-cover"
-          style={{ backgroundImage: "url('/assets/hero-QuaEnt.png')" }}
+          style={{ backgroundImage: "url('/assets/background-QuaEnt.png')" }}
         />
 
         {/* Centered stage prevents content drifting while bg stays full-width */}
         <div className="relative mx-auto max-w-[1440px] h-full">
+          {/* Center hero content image (fixed max width, does not upscale) */}
+          <img src="/assets/hero-QuaEnt.png" alt="Somnia hero" className="absolute left-1/2 top-0 -translate-x-1/2 w-[1440px] max-w-[1440px] select-none pointer-events-none" />
           {/* Join button (positioned similar to Figma/landing) */}
           <div
             className="hidden md:block"
@@ -40,7 +42,7 @@ export default function Page() {
           </div>
 
           {/* Trophy glint overlay (centered) */}
-          <div className="absolute left-1/2" style={{ top: 180, marginLeft: 24, transform: 'translateX(-50%)', width: 300, height: 360, zIndex: 1, pointerEvents: 'none' }}>
+          <div className="absolute left-1/2" style={{ top: 320, marginLeft: 24, transform: 'translateX(-50%)', width: 300, height: 360, zIndex: 1, pointerEvents: 'none' }}>
             <div className="trophy-shines" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
               <span className="shine shine-top" />
             </div>
