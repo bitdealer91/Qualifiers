@@ -15,7 +15,7 @@ export default function Page() {
           {/* Join button (positioned similar to Figma/landing) */}
           <div
             className="hidden md:block"
-            style={{ position: 'absolute', left: '50%', top: '900px', transform: 'translateX(-50%)', zIndex: 10 }}
+            style={{ position: 'absolute', left: '50%', top: '910px', transform: 'translateX(-50%)', zIndex: 10 }}
           >
             <a
               href="/staking-cup/qualifiers"
@@ -42,7 +42,7 @@ export default function Page() {
           </div>
 
           {/* Trophy glint overlay (centered) */}
-          <div className="absolute left-1/2" style={{ top: 320, marginLeft: 24, transform: 'translateX(-50%)', width: 300, height: 360, zIndex: 1, pointerEvents: 'none' }}>
+          <div className="absolute left-1/2" style={{ top: 250, marginLeft: 24, transform: 'translateX(-50%)', width: 300, height: 360, zIndex: 1, pointerEvents: 'none' }}>
             <div className="trophy-shines" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
               <span className="shine shine-top" />
             </div>
