@@ -34,7 +34,7 @@ export default function Leaderboard() {
   const [page, setPage] = useState(1);
   const { address } = useAccount();
   const { setOpen: openConnectModal } = useConnectKitModal();
-  const [activeBtn, setActiveBtn] = useState<null | 'choose' | 'see'>(null);
+  const [activeBtn, setActiveBtn] = useState<null | 'choose' | 'see'>('choose');
   const [sortKey, setSortKey] = useState<SortKey>('totalStaked');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 

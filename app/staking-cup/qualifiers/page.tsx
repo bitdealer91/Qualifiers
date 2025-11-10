@@ -8,7 +8,7 @@ export default function Page() {
     <main className="relative py-0 px-0">
       <section className="relative w-full">
         {/* Full-width background */}
-        <div className="absolute inset-0 -z-10 bg-center bg-no-repeat bg-cover" style={{ backgroundImage: "url('/assets/background-Qua.png')" }} />
+        <div className="absolute inset-0 -z-10 bg-top bg-no-repeat bg-cover" style={{ backgroundImage: "url('/assets/background-Qua.png')", backgroundColor: '#1a8f2f' }} />
         {/* Fixed-width centered stage for all positioned content; pad top to clear hero */}
         <div className="relative mx-auto w-[1440px] pt-[869px]">
           <div className="absolute left-0 top-0 w-full">
