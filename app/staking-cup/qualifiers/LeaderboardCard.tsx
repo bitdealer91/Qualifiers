@@ -4,7 +4,7 @@ import Leaderboard from '@/components/Leaderboard';
 export default function LeaderboardCard() {
   return (
     <div
-      className="relative w-[1213px] rounded-[39px] shadow-cardShadow overflow-hidden bg-cardBg backdrop-blur-[20.55px]"
+      className="relative w-full max-w-[1213px] rounded-[39px] shadow-cardShadow overflow-hidden bg-cardBg backdrop-blur-[20.55px]"
       data-testid="leaderboard-card"
     >
       {/* inset top highlight like in Figma */}

@@ -159,16 +159,32 @@ export default function Leaderboard() {
   const gridCols = 'grid-cols-[208px_208px_207px_208px_208px]';
 
   return (
-    <div className="relative overflow-hidden mx-auto w-[1213px] p-0" data-testid="leaderboard-card">
+    <div className="relative overflow-hidden mx-auto w-full max-w-[1213px] p-0" data-testid="leaderboard-card">
       {/* Title */}
-      <div className="pt-[32px] px-[40px]">
+      <div className="pt-[32px] px-[20px] md:px-[40px]">
         <h3 className="font-led text-leaderboardTitle tracking-leaderboardTitle text-leaderboardTitle text-center [text-shadow:rgba(0,0,0,0.92)_1px_1px_0px]">
           LEADERBOARD
         </h3>
       </div>
 
+      {/* Mobile controls (segment) */}
+      <div className="md:hidden px-4 mt-2 flex items-center justify-center gap-2">
+        <button
+          className={`flex-1 h-10 rounded-[12px] text-sm font-semibold ${activeBtn==='choose' ? 'bg-ctaGreenLight text-black' : 'bg-ctaGreenDark text-white/80'}`}
+          onClick={() => setActiveBtn('choose')}
+        >
+          Choose your team
+        </button>
+        <button
+          className={`flex-1 h-10 rounded-[12px] text-sm font-semibold ${activeBtn==='see' ? 'bg-ctaGreenLight text-black' : 'bg-ctaGreenDark text-white/80'}`}
+          onClick={() => { setActiveBtn('see'); scrollToSelf(); }}
+        >
+          See your position
+        </button>
+      </div>
+
   {/* Header action area positioned exactly by Figma coords */}
-  <div className="relative h-[120px] mt-[0px]">
+  <div className="relative h-[120px] mt-[0px] hidden md:block">
     {/* Choose your team (75:136) */}
     <button
       className={`absolute z-40 top-[32px] left-[32px] w-[246px] h-[69px] rounded-[16px] font-soccer italic uppercase text-[26px] leading-[0] tracking-[0.52px] text-ctaNeon [text-shadow:#000_0px_3px_0px] transition ${
@@ -248,8 +264,8 @@ export default function Leaderboard() {
 
   {/* Divider removed per latest design feedback */}
 
-      {/* Table inner container with rounded contour starting below the divider */}
-      <div className="relative mx-auto w-[1148px] rounded-[16px] overflow-hidden">
+      {/* Desktop table */}
+      <div className="hidden md:block relative mx-auto w-[1148px] rounded-[16px] overflow-hidden">
         <div className={`grid ${gridCols} items-center px-[40px] py-[29px] bg-rowStripeAlt gap-[9px]`} style={{ height: '70px' }}>
         {/* Validator: now a pill with its own border and sorting */}
         <button
@@ -359,8 +375,26 @@ export default function Leaderboard() {
         </div>
       </div>
 
+      {/* Mobile list (cards) */}
+      <div className="md:hidden mt-3 px-3 space-y-3">
+        {displayPageItems.map((v) => (
+          <MobileRow
+            key={v.address}
+            v={v}
+            onDelegate={() => {
+              if (!address) { openConnectModal(true); return; }
+              const match = allValidators.find(av => av.address.toLowerCase() === v.address.toLowerCase());
+              setPreselected(match ?? v);
+              setShowDelegate(true);
+            }}
+            showSee={activeBtn === 'see'}
+            userDelegationsByAddr={userDelegationsByAddr}
+          />
+        ))}
+      </div>
+
       {/* Footer actions */}
-      <div className="px-[40px] py-4 w-[1148px] mx-auto">
+      <div className="px-4 md:px-[40px] py-4 w-full md:w-[1148px] mx-auto">
         <Pagination
           page={page}
           pageCount={pageCount}
@@ -454,6 +488,36 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
         >
           Delegate
         </button>
+      </div>
+    </div>
+  );
+}
+
+function MobileRow({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorData; onDelegate: () => void; showSee: boolean; userDelegationsByAddr: Map<string, { delegated: string; pending: string; delegatedWei: string }>; }) {
+  const name = v.name;
+  const user = userDelegationsByAddr.get(v.address.toLowerCase());
+  return (
+    <div className="rounded-[14px] bg-white/85 backdrop-blur-sm shadow-leaderboardSm px-3 py-3">
+      <div className="flex items-center gap-3">
+        <img src={v.icon} alt={name} className="h-9 w-9 rounded-full" />
+        <div className="text-black font-medium">{name}</div>
+        <div className="ml-auto">
+          <button className="bg-actionPrimary text-white text-xs rounded-[10px] px-3 py-2 shadow-leaderboardSm" onClick={onDelegate}>Delegate</button>
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 text-[12px] text-[#343434]">
+        <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2">
+          <div className="opacity-70">Total {showSee ? 'delegated' : 'staked'}</div>
+          <div className="font-semibold text-black">{showSee ? (user?.delegated || '—') : v.totalStaked}</div>
+        </div>
+        <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2">
+          <div className="opacity-70">{showSee ? 'Position/Need' : 'Delegation rate'}</div>
+          <div className="font-semibold text-black">{showSee ? 'See table' : v.delegationRate}</div>
+        </div>
+        <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2 col-span-2">
+          <div className="opacity-70">{showSee ? 'Pending rewards' : 'Earnings'}</div>
+          <div className="font-semibold text-black">{showSee ? (user?.pending || '—') : v.earnings}</div>
+        </div>
       </div>
     </div>
   );

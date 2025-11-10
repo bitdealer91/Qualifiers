@@ -10,7 +10,7 @@ export default function Page() {
         {/* Full-width background */}
         <div className="absolute inset-0 -z-10 bg-top bg-no-repeat bg-cover" style={{ backgroundImage: "url('/assets/background-Qua.png')", backgroundColor: '#1a8f2f' }} />
         {/* Fixed-width centered stage for all positioned content; pad top to clear hero */}
-        <div className="relative mx-auto w-[1440px] pt-[869px]">
+        <div className="relative mx-auto max-w-[1440px] w-full pt-[869px] px-4 md:px-0">
           <div className="absolute left-0 top-0 w-full">
             <SiteHeader />
           </div>
@@ -23,7 +23,7 @@ export default function Page() {
               <span className="shine shine-top"></span>
             </div>
           </div>
-          <div className="mx-auto w-[1213px]">
+          <div className="mx-auto w-full max-w-[1213px]">
             <LeaderboardCard />
           </div>
           {/* Chickens immediately after leaderboard */}
