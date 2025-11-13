@@ -1,7 +1,12 @@
 "use client";
 import { formatPct } from '@/lib/format';
 
-type Props = { burnRate?: number; stakingApr?: number; realYield?: number };
+type Props = {
+  burnRate?: number;
+  stakingApr?: number;
+  realYield?: number;
+  variant?: 'desktop' | 'mobile';
+};
 
 // Expect these PNGs to be placed under public/assets/ (Figma export)
 const ICONS = {
@@ -15,16 +20,18 @@ function Pill({
   bgClass,
   icon,
   label,
-  value
+  value,
+  variant = 'desktop'
 }: {
   bgClass: string;
   icon: string;
   label: string;
   value?: string;
+  variant?: 'desktop' | 'mobile';
 }) {
   return (
     <div
-      className={`relative h-[73px] w-[179px] rounded-leaderboardPill shadow-leaderboardSm flex flex-col items-start justify-center p-[32px] ${bgClass}`}
+      className={`relative h-[73px] ${variant === 'mobile' ? 'w-[332px]' : 'w-[179px]'} rounded-leaderboardPill shadow-leaderboardSm flex flex-col items-start justify-center p-[32px] ${bgClass}`}
     >
       <div className="text-white text-3xl font-semibold font-polysans capitalize leading-8">
         {value ?? '--'}
@@ -40,26 +47,29 @@ function Pill({
   );
 }
 
-export default function MetricPills({ burnRate, stakingApr, realYield }: Props) {
+export default function MetricPills({ burnRate, stakingApr, realYield, variant = 'desktop' }: Props) {
   return (
-    <div className="flex gap-[26px]">
+    <div className={`${variant === 'mobile' ? 'flex flex-col gap-[10px]' : 'flex gap-[26px]'}`}>
       <Pill
         bgClass="bg-pillBlue"
         icon={ICONS.burn}
         label="Burn Rate"
         value={burnRate !== undefined ? formatPct(burnRate) : undefined}
+        variant={variant}
       />
       <Pill
         bgClass="bg-pillPurple"
         icon={ICONS.rocket}
         label="Staking APR"
         value={stakingApr !== undefined ? formatPct(stakingApr) : undefined}
+        variant={variant}
       />
       <Pill
         bgClass="bg-pillPink"
         icon={ICONS.diamond}
         label="Real Yield"
         value={realYield !== undefined ? formatPct(realYield) : undefined}
+        variant={variant}
       />
     </div>
   );

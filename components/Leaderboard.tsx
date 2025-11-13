@@ -26,7 +26,8 @@ const ASSETS = {
 
 const HEADER_ARROW_PATH = "M-0.000114955 53.2895L10.5721 49.0693L1.72114 41.687L-0.000114955 53.2895ZM3.48876 0.624901L2.71122 2.86495e-05L1.50988 1.60523L2.28742 2.2301L2.88809 1.4275L3.48876 0.624901ZM3.29592 48.7403L4.10895 49.3146C4.67876 48.4475 5.2294 47.563 5.75865 46.6636L4.91905 46.132L4.07945 45.6004C3.56733 46.4707 3.03442 47.3267 2.48289 48.166L3.29592 48.7403ZM6.88127 42.5272L7.75373 42.9984C8.22308 42.062 8.66811 41.114 9.08652 40.1569L8.19113 39.7346L7.29574 39.3123C6.89209 40.2357 6.4624 41.1511 6.00882 42.0559L6.88127 42.5272ZM9.70076 35.9022L10.6244 36.2526C10.9745 35.2545 11.2937 34.2502 11.5796 33.2424L10.6368 32.9524L9.69397 32.6624C9.42005 33.6282 9.11369 34.5922 8.77708 35.5519L9.70076 35.9022ZM11.5879 28.9309L12.5523 29.1292C12.7502 28.0791 12.9086 27.0287 13.0245 25.9814L12.0484 25.8618L11.0722 25.7422C10.9624 26.7344 10.8121 27.7321 10.6236 28.7325L11.5879 28.9309ZM12.2723 21.7266L13.2548 21.7253C13.2495 20.6476 13.1938 19.5776 13.0841 18.5188L12.1072 18.6235L11.1302 18.7282C11.2325 19.7151 11.2848 20.7161 11.2898 21.7279L12.2723 21.7266ZM11.3844 14.549L12.334 14.2914C12.0666 13.2487 11.7382 12.2234 11.3454 11.2197L10.4349 11.5987L9.52453 11.9776C9.88545 12.8997 10.188 13.8437 10.4349 14.8065L11.3844 14.549ZM8.61342 7.90712L9.4452 7.36894C8.89711 6.46438 8.28563 5.58615 7.60808 4.7378L6.85181 5.38421L6.09555 6.03061C6.71824 6.81027 7.27927 7.61619 7.78164 8.44529L8.61342 7.90712ZM4.05346 2.41954L4.69732 1.65373C4.30887 1.30334 3.90609 0.960293 3.48876 0.624901L2.88809 1.4275L2.28742 2.2301C2.67566 2.54212 3.04962 2.86065 3.4096 3.18536L4.05346 2.41954Z";
 
-const ROWS_PER_PAGE = 20;
+const DESKTOP_ROWS_PER_PAGE = 20;
+const MOBILE_ROWS_PER_PAGE = 6;
 
 type SortKey = keyof Pick<ValidatorData, 'name' | 'totalStaked' | 'delegationRate' | 'earnings'>;
 
@@ -37,6 +38,19 @@ export default function Leaderboard() {
   const [activeBtn, setActiveBtn] = useState<null | 'choose' | 'see'>('choose');
   const [sortKey, setSortKey] = useState<SortKey>('totalStaked');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [rowsPerPage, setRowsPerPage] = useState<number>(DESKTOP_ROWS_PER_PAGE);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      setRowsPerPage(DESKTOP_ROWS_PER_PAGE);
+      return;
+    }
+    const mql = window.matchMedia('(min-width: 768px)'); // Tailwind md breakpoint
+    const update = () => setRowsPerPage(mql.matches ? DESKTOP_ROWS_PER_PAGE : MOBILE_ROWS_PER_PAGE);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
 
   const [showDelegate, setShowDelegate] = useState(false);
   const [preselected, setPreselected] = useState<ValidatorData | null>(null);
@@ -45,7 +59,7 @@ export default function Leaderboard() {
     "",
     { key: sortKey, direction: sortDir },
     page,
-    ROWS_PER_PAGE,
+    rowsPerPage,
     VALIDATOR_NAMES,
     ALLOWED_VALIDATOR_NAMES
   );
@@ -130,11 +144,11 @@ export default function Leaderboard() {
     return sortedDisplay;
   }, [sortedDisplay, activeBtn, seeFilterSet]);
 
-  const pageCount = Math.max(1, Math.ceil(visibleRows.length / ROWS_PER_PAGE));
+  const pageCount = Math.max(1, Math.ceil(visibleRows.length / rowsPerPage));
   const displayPageItems = useMemo(() => {
-    const start = (page - 1) * ROWS_PER_PAGE;
-    return visibleRows.slice(start, start + ROWS_PER_PAGE);
-  }, [visibleRows, page]);
+    const start = (page - 1) * rowsPerPage;
+    return visibleRows.slice(start, start + rowsPerPage);
+  }, [visibleRows, page, rowsPerPage]);
 
   const scrollToSelf = () => {
     if (!address) {
@@ -161,25 +175,41 @@ export default function Leaderboard() {
   return (
     <div className="relative overflow-hidden mx-auto w-full max-w-[1213px] p-0" data-testid="leaderboard-card">
       {/* Title */}
-      <div className="pt-[32px] px-[20px] md:px-[40px]">
+      <div className="pt-[32px] px-[20px] md:px-[40px] hidden md:block">
         <h3 className="font-led text-leaderboardTitle tracking-leaderboardTitle text-leaderboardTitle text-center [text-shadow:rgba(0,0,0,0.92)_1px_1px_0px]">
           LEADERBOARD
         </h3>
       </div>
+      {/* Mobile title (smaller so it fits) */}
+      <div className="md:hidden pt-4 px-4">
+        <h3 className="font-led text-center text-[28px] leading-[1.2] tracking-[4.16px] text-leaderboardTitle [text-shadow:rgba(0,0,0,0.92)_1px_1px_0px]">
+          LEADERBOARD
+        </h3>
+      </div>
+
+      {/* Mobile metric pills under title (icons like desktop) */}
+      <div className="md:hidden mt-3 px-4">
+        <MetricPills
+          burnRate={burnRate !== 0 ? burnRate / 100 : undefined}
+          stakingApr={yieldData?.apy !== undefined ? yieldData.apy / 100 : undefined}
+          realYield={realYield !== 0 ? realYield / 100 : undefined}
+          variant="mobile"
+        />
+      </div>
 
       {/* Mobile controls (segment) */}
-      <div className="md:hidden px-4 mt-2 flex items-center justify-center gap-2">
+      <div className="md:hidden px-4 mt-3 flex items-center gap-3">
         <button
-          className={`flex-1 h-10 rounded-[12px] text-sm font-semibold ${activeBtn==='choose' ? 'bg-ctaGreenLight text-black' : 'bg-ctaGreenDark text-white/80'}`}
+          className={`w-[159px] h-[77px] rounded-[16px] font-soccer italic uppercase text-[18px] leading-[0.95] tracking-[0.48px] pl-[16px] pr-[13px] py-[18px] text-center whitespace-normal break-words ${activeBtn==='choose' ? 'bg-ctaGreenLight text-ctaNeon shadow-[0px_4px_0px_#000]' : 'bg-ctaGreenDark text-ctaNeon/90'}`}
           onClick={() => setActiveBtn('choose')}
         >
-          Choose your team
+          <span className="[text-shadow:#000_0px_3px_0px]">Choose your team</span>
         </button>
         <button
-          className={`flex-1 h-10 rounded-[12px] text-sm font-semibold ${activeBtn==='see' ? 'bg-ctaGreenLight text-black' : 'bg-ctaGreenDark text-white/80'}`}
+          className={`w-[159px] h-[77px] rounded-[16px] font-soccer italic uppercase text-[18px] leading-[0.95] tracking-[0.48px] pl-[16px] pr-[13px] py-[18px] text-center whitespace-normal break-words ${activeBtn==='see' ? 'bg-ctaGreenLight text-ctaNeon shadow-[0px_4px_0px_rgba(0,0,0,0.14)]' : 'bg-[#258f19] text-ctaNeon/90'}`}
           onClick={() => { setActiveBtn('see'); scrollToSelf(); }}
         >
-          See your position
+          <span className="[text-shadow:#000_0px_3px_0px]">See your position</span>
         </button>
       </div>
 
