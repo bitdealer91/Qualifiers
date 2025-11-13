@@ -92,6 +92,15 @@ body {
   text-shadow: 0 4px 0 rgba(0,0,0,0.85);
 }
 
+/* Fluid mobile title for Leaderboard (fits various device widths) */
+@media (max-width: 767px) {
+  .lb-mobile-title {
+    font-size: clamp(16px, 5.2vw, 26px);
+    letter-spacing: clamp(1px, 0.35vw, 4px);
+    line-height: 1.2;
+  }
+}
+
 /* Central cup premium glow */
 /* Trophy shine (from landing) */
 .trophy-shines { position: relative; inset: 0; overflow: visible; pointer-events: none; }
