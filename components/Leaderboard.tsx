@@ -182,7 +182,7 @@ export default function Leaderboard() {
       </div>
       {/* Mobile title (smaller so it fits) */}
       <div className="md:hidden pt-4 px-4">
-        <h3 className="font-led text-center text-[28px] leading-[1.2] tracking-[4.16px] text-leaderboardTitle [text-shadow:rgba(0,0,0,0.92)_1px_1px_0px]">
+        <h3 className="font-led text-center text-[20px] leading-[1.2] tracking-[2px] text-leaderboardTitle [text-shadow:rgba(0,0,0,0.92)_1px_1px_0px]">
           LEADERBOARD
         </h3>
       </div>
