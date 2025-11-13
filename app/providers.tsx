@@ -9,9 +9,11 @@ import { Toaster as RadixToaster } from '@/components/ui/toaster';
 
 // Add WalletConnect for mobile deep linking; keep injected for desktop/metamask
 const wcProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+// Avoid initializing WalletConnect on the server (build/SSG) where indexedDB/window are not available
+const isClient = typeof window !== 'undefined';
 const connectors = [
   injected({ target: 'metaMask' }),
-  ...(wcProjectId
+  ...(isClient && wcProjectId
     ? [
         walletConnect({
           projectId: wcProjectId,
@@ -19,10 +21,7 @@ const connectors = [
           metadata: {
             name: 'Somnia Staking Cup',
             description: 'Stake. Compete. Win.',
-            url:
-              typeof window !== 'undefined'
-                ? window.location.origin
-                : 'https://qualifiers.vercel.app',
+            url: window.location.origin,
             icons: ['/assets/somnia-logo.svg'],
           },
         }),
