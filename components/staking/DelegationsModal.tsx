@@ -497,18 +497,18 @@ export function DelegationsModal({
         className="w-[880px] max-w-[95vw] rounded-[44px] border-0 p-0 overflow-hidden max-h-[85vh]"
         style={{ backgroundColor: '#33a000', boxShadow: '0px 14px 28.7px rgba(0,0,0,0.25)' }}
       >
-        <div className="px-[40px] pt-[32px] pb-[12px]">
+        <div className="px-[24px] md:px-[40px] pt-[20px] md:pt-[32px] pb-[12px]">
           <DialogHeader>
-            <DialogTitle className="font-soccer italic uppercase text-[40px] tracking-[0.8px] text-[#d9ff00] [text-shadow:#000_0px_3px_0px] leading-none">
+            <DialogTitle className="font-soccer italic uppercase text-[28px] md:text-[40px] tracking-[0.8px] text-[#d9ff00] [text-shadow:#000_0px_3px_0px] leading-none">
               My Delegations
             </DialogTitle>
-            <DialogDescription className="mt-3 text-[18px] text-white font-polysans">
+            <DialogDescription className="mt-2 md:mt-3 text-[14px] md:text-[18px] text-white font-polysans">
               Manage your staked delegations and claim rewards.
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <div className="px-[32px] pb-[24px] overflow-y-auto" style={{ maxHeight: '70vh' }}>
+        <div className="px-[20px] md:px-[32px] pb-[24px] overflow-y-auto" style={{ maxHeight: '70vh' }}>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />

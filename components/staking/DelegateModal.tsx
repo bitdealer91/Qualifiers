@@ -470,17 +470,17 @@ export function DelegateModal({
         className="w-[620px] max-w-[95vw] rounded-[44px] border-0 p-0 overflow-hidden"
         style={{ backgroundColor: "#33a000", boxShadow: "0px 14px 28.7px rgba(0,0,0,0.25)" }}
       >
-        <div className="px-[40px] pt-[32px] pb-[24px]">
+        <div className="px-[24px] md:px-[40px] pt-[20px] md:pt-[32px] pb-[16px] md:pb-[24px]">
           <DialogHeader>
-            <DialogTitle className="font-soccer italic uppercase text-[40px] tracking-[0.8px] text-[#d9ff00] [text-shadow:#000_0px_3px_0px] leading-none">
+            <DialogTitle className="font-soccer italic uppercase text-[28px] md:text-[40px] tracking-[0.8px] text-[#d9ff00] [text-shadow:#000_0px_3px_0px] leading-none">
               DELEGATE STAKE
             </DialogTitle>
-            <DialogDescription className="mt-4 text-[20px] text-white font-polysans">
+            <DialogDescription className="mt-2 md:mt-4 text-[14px] md:text-[20px] text-white font-polysans">
               Choose a validator and enter the amount you want to delegate.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <div className="grid gap-3 px-[37px] pb-6">
+        <div className="grid gap-3 px-[20px] md:px-[37px] pb-6">
           {/* Validator selection */}
           <div className="grid gap-1.5">
             {!selectedValidator ? (
@@ -542,12 +542,12 @@ export function DelegateModal({
 
           {/* Selected validator info */}
           {selectedValidator && (
-            <div className="rounded-[18px] p-5" style={{ backgroundColor: "#0b7000" }}>
+            <div className="rounded-[18px] p-4 md:p-5" style={{ backgroundColor: "#0b7000" }}>
               <div className="flex justify-between items-start mb-2">
-                <h4 className="text-[20px] tracking-[0.4px] text-[#9dff00] font-polysans">Select Validator</h4>
+                <h4 className="text-[16px] md:text-[20px] tracking-[0.4px] text-[#9dff00] font-polysans">Select Validator</h4>
                 <Button
                   onClick={() => setSelectedValidator("")}
-                  className="rounded-[39px] px-4 py-[14px] h-auto text-[17px] font-polysans"
+                  className="rounded-[39px] px-3 md:px-4 py-[10px] md:py-[14px] h-auto text-[15px] md:text-[17px] font-polysans"
                   style={{ backgroundColor: "#dffc96", color: "#0a6000", boxShadow: "0px 3px 0px rgba(0,0,0,0.18)" }}
                   variant="ghost"
                 >
@@ -558,10 +558,10 @@ export function DelegateModal({
                 .filter((v) => v.address === selectedValidator)
                 .map((validator) => (
                   <div key={validator.id} className="flex items-center gap-5 mt-3">
-                    <img src={validator.icon} alt={validator.name} className="w-[65px] h-[65px] rounded-full" />
+                    <img src={validator.icon} alt={validator.name} className="w-[52px] h-[52px] md:w-[65px] md:h-[65px] rounded-full" />
                     <div className="text-white">
-                      <div className="text-[25px] tracking-[0.5px] font-polysans">{validator.name}</div>
-                      <div className="text-[17px] truncate max-w-[339px]">{validator.address}</div>
+                      <div className="text-[20px] md:text-[25px] tracking-[0.5px] font-polysans">{validator.name}</div>
+                      <div className="text-[14px] md:text-[17px] truncate max-w-[339px]">{validator.address}</div>
                       <div className="text-[15px] text-[#96df8e] mt-1">Total staked: {validator.totalStaked}</div>
                       {((unstakeRequestTs ?? 0n) > 0n) && (
                         <div className="mt-2 text-[14px] text-yellow-300">
@@ -593,7 +593,7 @@ export function DelegateModal({
               onChange={(e) => setStakeAmount(e.target.value)}
               min="0"
               step="0.01"
-              className="w-full px-3 py-[14px] rounded-[14px] text-[#9af470] placeholder:text-[#9af470]"
+              className="w-full px-3 py-[12px] md:py-[14px] rounded-[14px] text-[#9af470] placeholder:text-[#9af470]"
               style={{ backgroundColor: "#0b7000", borderColor: "#50c718", borderWidth: 1 }}
             />
             {/* Show remaining capacity for selected validator */}
@@ -609,7 +609,7 @@ export function DelegateModal({
 
           {false}
         </div>
-        <div className="flex flex-col sm:flex-row justify-end gap-4 px-[37px] pb-[32px]">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 md:gap-4 px-[20px] md:px-[37px] pb-[24px] md:pb-[32px]">
           {txStatus === "success" ? (
             // Show Go Back button when delegation is successful
             <Button
