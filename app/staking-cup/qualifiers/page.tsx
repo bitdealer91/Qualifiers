@@ -19,6 +19,12 @@ export default function Page() {
 
         {/* Mobile hero content image */}
         <img src="/assets/mobile/Hero-section-mob.png" alt="Mobile hero" className="md:hidden block w-full h-auto select-none pointer-events-none" />
+        {/* Mobile trophy glint overlay ON the hero image */}
+        <div className="md:hidden absolute left-1/2 z-10 pointer-events-none" style={{ top: 210, marginLeft: 40, transform: 'translateX(-50%)', width: 168, height: 154 }}>
+          <div className="trophy-shines" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
+            <span className="shine shine-top"></span>
+          </div>
+        </div>
         {/* Mobile menu button */}
         <button
           type="button"
@@ -43,6 +49,7 @@ export default function Page() {
               <span className="shine shine-top"></span>
             </div>
           </div>
+          {/* Mobile trophy glint overlay moved to hero level */}
           <div className="mx-auto w-full max-w-[1213px] -mt-[10px] md:mt-0">
             <LeaderboardCard />
           </div>

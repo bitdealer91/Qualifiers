@@ -11,6 +11,12 @@ export default function Page() {
         <div className="hidden md:block absolute inset-0 -z-10 bg-center bg-no-repeat bg-cover" style={{ backgroundImage: "url('/assets/background-QuaEnt.png')" }} />
         {/* Mobile main image (full height, scrolls) */}
         <img src="/assets/mobile/back-mob-enter.png" alt="Somnia mobile entry" className="md:hidden block w-full h-auto select-none pointer-events-none" />
+        {/* Mobile trophy glint overlay ON the back-mob-enter background */}
+        <div className="md:hidden absolute left-1/2" style={{ top: 230, marginLeft: 40, transform: 'translateX(-50%)', width: 168, height: 154, zIndex: 10, pointerEvents: 'none' }}>
+          <div className="trophy-shines" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
+            <span className="shine shine-top" />
+          </div>
+        </div>
         {/* Mobile menu button pinned to image (top-right) */}
         <button
           type="button"

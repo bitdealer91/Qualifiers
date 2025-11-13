@@ -100,6 +100,18 @@ body {
     letter-spacing: clamp(1px, 0.42vw, 4.16px);
     line-height: 1.2;
   }
+  /* Smaller trophy glint on mobile */
+  .trophy-shines .shine-top { width: 64px; height: 78px; }
+  .trophy-shines .shine-top::before {
+    /* keep same motion but scale footprint down */
+    width: 180%;
+    height: 100%;
+  }
+  .trophy-shines .shine-top::after {
+    width: 16px;
+    height: 16px;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
 }
 
 /* Central cup premium glow */
