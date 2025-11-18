@@ -30,17 +30,11 @@ html, body, :root {
 }
 
 body {
-  @apply bg-pitch text-white font-inter;
-  background-image: 
-    linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
-    repeating-linear-gradient(
-      to right,
-      rgba(255,255,255,0.05) 0,
-      rgba(255,255,255,0.05) 4px,
-      transparent 4px,
-      transparent 200px
-    );
-  background-size: auto, 200px 100%;
+  @apply text-white font-inter;
+  background-image: url('/assets/background-QuaEnt.png');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 @font-face {

@@ -6,12 +6,8 @@ export default function Page() {
   return (
     <main className="relative">
       {/* Hero background */}
-      <section className="relative md:h-[1053px]">
-        {/* Desktop background */}
-        <div className="hidden md:block absolute inset-0 -z-10 bg-center bg-no-repeat bg-cover" style={{ backgroundImage: "url('/assets/background-QuaEnt.png')" }} />
-        {/* Mobile main image (full height, scrolls) */}
-        <img src="/assets/mobile/back-mob-enter.png" alt="Somnia mobile entry" className="md:hidden block w-full h-auto select-none pointer-events-none" />
-        {/* Mobile trophy glint overlay ON the back-mob-enter background */}
+      <section className="relative min-h-screen">
+        {/* Mobile trophy glint overlay */}
         <div className="md:hidden absolute left-1/2" style={{ top: 230, marginLeft: 40, transform: 'translateX(-50%)', width: 168, height: 154, zIndex: 10, pointerEvents: 'none' }}>
           <div className="trophy-shines" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
             <span className="shine shine-top" />
@@ -36,9 +32,7 @@ export default function Page() {
 
         {/* Centered stage prevents content drifting while bg stays full-width */}
         <div className="relative mx-auto max-w-[1440px] w-full h-full">
-          {/* Center hero content image (fixed max width, does not upscale) */}
-          <img src="/assets/hero-QuaEnt.png" alt="Somnia hero" className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 w-full max-w-[1440px] select-none pointer-events-none" />
-          {/* Mobile uses only the full background image; no extra hero layer */}
+          {/* Center hero content image removed; global background handles hero */}
 
           {/* Join button (positioned similar to Figma/landing) */}
           <div
