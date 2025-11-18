@@ -22,6 +22,22 @@ import { useModal as useConnectKitModal } from "connectkit";
 import { pendingDelegationsStorage } from "@/lib/pendingDelegations";
 import { getErrorMessage, isUserRejection } from "@/utils/errorMessages";
 
+function SomiInline({ text, className }: { text: string; className?: string }) {
+  const t = String(text || "");
+  const hasUnit = /\s*SOMI$/i.test(t);
+  if (!hasUnit) return <span className={className}>{t}</span>;
+  const amount = t.replace(/\s*SOMI$/i, "");
+  return (
+    <span className={className ? className : ""}>
+      <span className="inline-flex items-center gap-1">
+        <span>{amount}</span>
+        <img src="/somnia-logo.svg" alt="SOMI" className="inline-block w-[14px] h-[14px]" />
+        <span>SOMI</span>
+      </span>
+    </span>
+  );
+}
+
 interface DelegationsModalProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -593,7 +609,7 @@ export function DelegationsModal({
                         Delegated Amount
                       </div>
                       <div className="font-bold text-lg text-white">
-                        {delegation.formattedDelegatedAmount}
+                        <SomiInline text={delegation.formattedDelegatedAmount} />
                       </div>
                     </div>
                   </div>
@@ -604,7 +620,7 @@ export function DelegationsModal({
                         Pending Rewards
                       </div>
                       <div className="font-semibold text-white">
-                        {delegation.formattedPendingRewards}
+                        <SomiInline text={delegation.formattedPendingRewards} />
                       </div>
                     </div>
                     <div className="rounded-lg p-3" style={{ backgroundColor: '#0e6f00' }}>

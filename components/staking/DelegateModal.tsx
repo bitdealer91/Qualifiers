@@ -30,6 +30,22 @@ import { pendingDelegationsStorage } from "@/lib/pendingDelegations";
 import { getErrorMessage, isUserRejection } from "@/utils/errorMessages";
 import { useTopDelegators } from "@/hooks/useTopDelegators";
 
+function SomiInline({ text, className }: { text: string; className?: string }) {
+  const t = String(text || "");
+  const hasUnit = /\s*SOMI$/i.test(t);
+  if (!hasUnit) return <span className={className}>{t}</span>;
+  const amount = t.replace(/\s*SOMI$/i, "");
+  return (
+    <span className={className ? className : ""}>
+      <span className="inline-flex items-center gap-1">
+        <span>{amount}</span>
+        <img src="/somnia-logo.svg" alt="SOMI" className="inline-block w-[14px] h-[14px]" />
+        <span>SOMI</span>
+      </span>
+    </span>
+  );
+}
+
 interface DelegateModalProps {
   validators: ValidatorData[];
   isOpen?: boolean;
@@ -582,8 +598,12 @@ export function DelegateModal({
           )}
 
           <div className="grid gap-2">
-            <label htmlFor="amount" className="text-[20px] text-white font-polysans">
-              Amount (SOMI)
+            <label htmlFor="amount" className="text-[20px] text-white font-polysans inline-flex items-center gap-2">
+              <span>Amount</span>
+              <span className="inline-flex items-center gap-1">
+                <img src="/somnia-logo.svg" alt="SOMI" className="inline-block w-[14px] h-[14px]" />
+                <span>SOMI</span>
+              </span>
             </label>
             <Input
               id="amount"
@@ -600,9 +620,7 @@ export function DelegateModal({
             {remainingCapacity && (
               <div className="text-xs mt-2 text-white/90">
                 Maximum additional stake allowed:{" "}
-                <span className="ml-1 font-semibold text-[#d9ff00] [text-shadow:#000_0px_1px_0px]">
-                  {remainingCapacity} SOMI
-                </span>
+                <SomiInline text={`${remainingCapacity} SOMI`} className="ml-1 font-semibold text-[#d9ff00] [text-shadow:#000_0px_1px_0px]" />
               </div>
             )}
           </div>

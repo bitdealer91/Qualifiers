@@ -18,6 +18,22 @@ import { useTopDelegators } from '@/hooks/useTopDelegators';
 import { useDelegatorRank } from '@/hooks/useDelegatorRank';
 import { formatEther } from 'viem';
 import { createPortal } from 'react-dom';
+
+function SomiAmount({ text }: { text: string }) {
+  const t = String(text || '');
+  const hasUnit = /\s*SOMI$/i.test(t);
+  if (!hasUnit) {
+    return <>{t}</>;
+  }
+  const amount = t.replace(/\s*SOMI$/i, '');
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span>{amount}</span>
+      <img src="/somnia-logo.svg" alt="SOMI" className="inline-block w-[14px] h-[14px]" />
+      <span>SOMI</span>
+    </span>
+  );
+}
 // Figma assets (vectors/lines) extracted from node 75:133
 const ASSETS = {
   arrow4719: 'http://localhost:3845/assets/25c85fdec3716e9f451bfea000f8c43252de616d.svg',
@@ -138,12 +154,36 @@ export default function Leaderboard() {
 
   // In "See your position" mode, show only validators the user has delegated to
   const seeFilterSet = useMemo(() => new Set(Array.from(userDelegationsByAddr.keys())), [userDelegationsByAddr]);
+  // Ensure delegated validators appear even if not present in the curated/allowed list
+  const supplementalSeeRows = useMemo(() => {
+    if (activeBtn !== 'see') return [] as ValidatorData[];
+    const baseAddresses = new Set(sortedDisplay.map((v) => v.address.toLowerCase()));
+    const result: ValidatorData[] = [];
+    for (const addrLower of seeFilterSet) {
+      if (!baseAddresses.has(addrLower)) {
+        const addr = Array.from(userDelegationsByAddr.keys()).find((k) => k.toLowerCase() === addrLower) || addrLower;
+        const name = (VALIDATOR_NAMES as any)?.[addrLower] || `${addr.slice(0,6)}...${addr.slice(-4)}`;
+        result.push({
+          id: 10000 + result.length,
+          icon: `https://api.dicebear.com/9.x/rings/png?seed=${addr}`,
+          name,
+          address: addr,
+          totalStaked: '—',
+          nextRound: 'Yes',
+          earnings: '—',
+          delegationRate: '—',
+        });
+      }
+    }
+    return result;
+  }, [activeBtn, seeFilterSet, sortedDisplay, userDelegationsByAddr]);
   const visibleRows = useMemo(() => {
     if (activeBtn === 'see') {
-      return sortedDisplay.filter((v) => seeFilterSet.has(v.address.toLowerCase()));
+      const filtered = sortedDisplay.filter((v) => seeFilterSet.has(v.address.toLowerCase()));
+      return filtered.concat(supplementalSeeRows);
     }
     return sortedDisplay;
-  }, [sortedDisplay, activeBtn, seeFilterSet]);
+  }, [sortedDisplay, activeBtn, seeFilterSet, supplementalSeeRows]);
 
   const pageCount = Math.max(1, Math.ceil(visibleRows.length / rowsPerPage));
   const displayPageItems = useMemo(() => {
@@ -520,21 +560,19 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
         </div>
       </div>
       {/* Hover popover with Top-10 stakers via portal to avoid clipping */}
-      {!showSee && hovered && typeof document !== 'undefined' && createPortal(
+      {hovered && typeof document !== 'undefined' && createPortal(
         <div
           className="z-[9999] w-[420px] rounded-[12px] bg-leaderboardHeaderCell shadow-leaderboardSm p-3 border border-headerPillBorder"
           style={{ position: 'fixed', top: popoverPos.top, left: popoverPos.left }}
         >
           <div className="flex items-center justify-between mb-2">
-            <div className="text-[#343434] text-[13px] leading-none opacity-80">Top 10 delegators</div>
+            <div className="text-[#343434] text-[13px] leading-none opacity-80">Top 10 stakers</div>
             <div className="text-[#343434] text-[11px] leading-none opacity-60">{name}</div>
           </div>
           <div className="max-h-[240px] overflow-auto pr-1">
             {top10Error && <div className="text-red-600 text-xs">Failed to load</div>}
             {loadingTop10 && !top10Error && <div className="text-[#343434] text-xs opacity-70">Loading…</div>}
-            {!loadingTop10 && !top10Error && (top10?.length ?? 0) === 0 && (
-              <div className="text-[#343434] text-xs opacity-70">No delegators yet</div>
-            )}
+            {!loadingTop10 && !top10Error && (top10?.length ?? 0) === 0 && <div className="text-[#343434] text-xs opacity-70">No stakers yet</div>}
             {!loadingTop10 && !top10Error && top10 && top10.length > 0 && (
               <ul className="space-y-1">
                 {top10.slice(0, 10).map((d, idx) => {
@@ -546,7 +584,7 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
                         <span className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full bg-ctaGreenLight text-black text-[11px]">{idx + 1}</span>
                         <span className="text-black text-[12px]">{short}</span>
                       </div>
-                      <div className="text-[#343434] text-[12px]">{d.formattedAmount}</div>
+                      <div className="text-[#343434] text-[12px]"><SomiAmount text={d.formattedAmount} /></div>
                     </li>
                   );
                 })}
@@ -557,13 +595,23 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
         document.body
       )}
       <div className="w-[188px] mx-auto rounded-leaderboardTiny flex items-center justify-center">
-        <span className="text-leaderboardCell text-[#343434] leading-none text-center">{showSee ? (user?.delegated || '—') : v.totalStaked}</span>
+        <span className="text-leaderboardCell text-[#343434] leading-none text-center">
+          {(() => {
+            const val = showSee ? (user?.delegated || '—') : v.totalStaked;
+            return /\s*SOMI$/i.test(String(val)) ? <SomiAmount text={String(val)} /> : <>{val}</>;
+          })()}
+        </span>
       </div>
       <div className="w-[188px] mx-auto rounded-leaderboardTiny flex items-center justify-center">
         <span className="text-leaderboardCell text-[#343434] leading-none text-center">{showSee ? (rankInTop10 ?? fullRank ?? (needToTop10 ? `Need ${needToTop10}` : '—')) : v.delegationRate}</span>
       </div>
       <div className="w-[188px] mx-auto rounded-leaderboardTiny flex items-center justify-center">
-        <span className="text-leaderboardCell text-[#343434] leading-none text-center">{showSee ? (user?.pending || '—') : v.earnings}</span>
+        <span className="text-leaderboardCell text-[#343434] leading-none text-center">
+          {(() => {
+            const val = showSee ? (user?.pending || '—') : v.earnings;
+            return /\s*SOMI$/i.test(String(val)) ? <SomiAmount text={String(val)} /> : <>{val}</>;
+          })()}
+        </span>
       </div>
       <div className="w-[188px] mx-auto flex items-center justify-center">
         <button
@@ -593,7 +641,12 @@ function MobileRow({ v, onDelegate, showSee, userDelegationsByAddr }: { v: Valid
       <div className="mt-3 grid grid-cols-2 gap-2 text-[12px] text-[#343434]">
         <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2">
           <div className="opacity-70">Total {showSee ? 'delegated' : 'staked'}</div>
-          <div className="font-semibold text-black">{showSee ? (user?.delegated || '—') : v.totalStaked}</div>
+          <div className="font-semibold text-black">
+            {(() => {
+              const val = showSee ? (user?.delegated || '—') : v.totalStaked;
+              return /\s*SOMI$/i.test(String(val)) ? <SomiAmount text={String(val)} /> : <>{val}</>;
+            })()}
+          </div>
         </div>
         <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2">
           <div className="opacity-70">{showSee ? 'Position/Need' : 'Delegation rate'}</div>
@@ -601,7 +654,12 @@ function MobileRow({ v, onDelegate, showSee, userDelegationsByAddr }: { v: Valid
         </div>
         <div className="rounded-[8px] bg-leaderboardHeaderCell px-2 py-2 col-span-2">
           <div className="opacity-70">{showSee ? 'Pending rewards' : 'Earnings'}</div>
-          <div className="font-semibold text-black">{showSee ? (user?.pending || '—') : v.earnings}</div>
+          <div className="font-semibold text-black">
+            {(() => {
+              const val = showSee ? (user?.pending || '—') : v.earnings;
+              return /\s*SOMI$/i.test(String(val)) ? <SomiAmount text={String(val)} /> : <>{val}</>;
+            })()}
+          </div>
         </div>
       </div>
     </div>
