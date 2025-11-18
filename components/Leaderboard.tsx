@@ -17,6 +17,7 @@ import { useDelegationsData } from '@/components/staking/hooks/useDelegationsDat
 import { useTopDelegators } from '@/hooks/useTopDelegators';
 import { useDelegatorRank } from '@/hooks/useDelegatorRank';
 import { formatEther } from 'viem';
+import { createPortal } from 'react-dom';
 // Figma assets (vectors/lines) extracted from node 75:133
 const ASSETS = {
   arrow4719: 'http://localhost:3845/assets/25c85fdec3716e9f451bfea000f8c43252de616d.svg',
@@ -461,7 +462,11 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
   const name = v.name;
   const user = userDelegationsByAddr.get(v.address.toLowerCase());
   const { address: userAddress } = useAccount();
-  const { delegators: top10 } = useTopDelegators(showSee ? v.address : undefined, 10);
+  const rowRef = useRef<HTMLDivElement | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  // Load top-10 for "See your position" mode eagerly, otherwise only on hover in "Choose your team" mode
+  const { delegators: top10, loading: loadingTop10, error: top10Error } = useTopDelegators(showSee ? v.address : (hovered ? v.address : undefined), 10);
   const { rank: fullRank, thresholdWei } = useDelegatorRank(showSee ? v.address : undefined, userAddress);
   const needToTop10 = useMemo(() => {
     if (!showSee || !user) return null;
@@ -490,10 +495,23 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
   }, [top10, userAddress]);
   return (
     <div
-      className={`grid grid-cols-[208px_208px_207px_208px_208px] items-center px-[40px] h-[70px] odd:bg-rowStripe even:bg-rowStripeAlt gap-[9px] ${
+      className={`grid grid-cols-[208px_208px_207px_208px_208px] items-center px-[40px] h-[70px] odd:bg-rowStripe even:bg-rowStripeAlt gap-[9px] relative ${
         ''
       }`}
       data-testid={`row-${v.address}`}
+      ref={rowRef}
+      onMouseEnter={() => {
+        setHovered(true);
+        const el = rowRef.current;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // Match previous offsets: left + ~210px, top + ~6px (viewport coords, fixed positioning)
+          setPopoverPos({ top: Math.max(8, rect.top + 6), left: rect.left + 210 });
+        }
+      }}
+      onMouseLeave={() => {
+        setHovered(false);
+      }}
     >
       <div className="flex items-center justify-start">
         <div className="w-[188px] ml-[10px] flex items-center gap-[13px] justify-start">
@@ -501,6 +519,43 @@ function Row({ v, onDelegate, showSee, userDelegationsByAddr }: { v: ValidatorDa
           <span className="text-leaderboardCell text-black font-medium leading-none">{name}</span>
         </div>
       </div>
+      {/* Hover popover with Top-10 stakers via portal to avoid clipping */}
+      {!showSee && hovered && typeof document !== 'undefined' && createPortal(
+        <div
+          className="z-[9999] w-[420px] rounded-[12px] bg-leaderboardHeaderCell shadow-leaderboardSm p-3 border border-headerPillBorder"
+          style={{ position: 'fixed', top: popoverPos.top, left: popoverPos.left }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[#343434] text-[13px] leading-none opacity-80">Top 10 delegators</div>
+            <div className="text-[#343434] text-[11px] leading-none opacity-60">{name}</div>
+          </div>
+          <div className="max-h-[240px] overflow-auto pr-1">
+            {top10Error && <div className="text-red-600 text-xs">Failed to load</div>}
+            {loadingTop10 && !top10Error && <div className="text-[#343434] text-xs opacity-70">Loading…</div>}
+            {!loadingTop10 && !top10Error && (top10?.length ?? 0) === 0 && (
+              <div className="text-[#343434] text-xs opacity-70">No delegators yet</div>
+            )}
+            {!loadingTop10 && !top10Error && top10 && top10.length > 0 && (
+              <ul className="space-y-1">
+                {top10.slice(0, 10).map((d, idx) => {
+                  const addr = d.stakerId;
+                  const short = `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+                  return (
+                    <li key={`${addr}-${idx}`} className="flex items-center justify-between bg-white/80 rounded-[8px] px-2 py-[6px]">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full bg-ctaGreenLight text-black text-[11px]">{idx + 1}</span>
+                        <span className="text-black text-[12px]">{short}</span>
+                      </div>
+                      <div className="text-[#343434] text-[12px]">{d.formattedAmount}</div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
       <div className="w-[188px] mx-auto rounded-leaderboardTiny flex items-center justify-center">
         <span className="text-leaderboardCell text-[#343434] leading-none text-center">{showSee ? (user?.delegated || '—') : v.totalStaked}</span>
       </div>
