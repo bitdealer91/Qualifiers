@@ -16,12 +16,24 @@ export const TOP_DELEGATORS_QUERY_FLAT = gql`
     delegations(
       first: $first
       skip: $skip
-      where: { validatorAddress: $validatorId, staker_: { totalDelegated_gt: $minAmount } }
-      orderBy: staker__totalDelegated
+      where: { validatorAddress: $validatorId, amount_gt: $minAmount }
+      orderBy: amount
       orderDirection: desc
     ) {
       id
       validatorAddress
+      amount
+      staker { id totalDelegated }
+    }
+  }
+`;
+
+// Query provided for Position on Top: get delegations by staker
+export const STAKER_DELEGATIONS_QUERY = gql`
+  query ($s: Bytes!) {
+    delegations(where: { staker_: { id: $s } }) {
+      validatorAddress
+      amount
       staker { id totalDelegated }
     }
   }
@@ -45,7 +57,7 @@ export async function fetchTopDelegators(validatorAddress: string, first = 10, m
   const list = (data?.delegations || []) as Array<any>;
   return list.map((d) => ({
     stakerId: d?.staker?.id || '',
-    amountWei: d?.staker?.totalDelegated || '0',
+    amountWei: d?.amount || '0',
     updatedAt: 0,
   }));
 }
@@ -74,7 +86,7 @@ export async function fetchDelegatorRank(
     const arrNew = (dataNew?.delegations || []) as Array<any>;
     return arrNew.map((d) => ({
       stakerId: d?.staker?.id || '',
-      amountWei: d?.staker?.totalDelegated || '0',
+      amountWei: d?.amount || '0',
     }));
   }
 
@@ -94,6 +106,28 @@ export async function fetchDelegatorRank(
   }
 
   return { rank, top10ThresholdWei };
+}
+
+
+export interface StakerDelegation {
+  validatorAddress: string;
+  amountWei: string;
+  stakerId: string;
+  totalDelegatedWei: string;
+}
+
+// Fetch all delegations for a specific staker (addresses are expected to be hex)
+export async function fetchStakerDelegations(stakerAddress: string): Promise<StakerDelegation[]> {
+  const client = getSubgraphClient();
+  const variables = { s: String(stakerAddress || '').toLowerCase() };
+  const data = await client.request<any>(STAKER_DELEGATIONS_QUERY, variables);
+  const list = (data?.delegations || []) as Array<any>;
+  return list.map((d) => ({
+    validatorAddress: d?.validatorAddress || '',
+    amountWei: d?.amount || '0',
+    stakerId: d?.staker?.id || '',
+    totalDelegatedWei: d?.staker?.totalDelegated || '0',
+  }));
 }
 
 

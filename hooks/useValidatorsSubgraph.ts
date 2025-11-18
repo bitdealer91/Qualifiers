@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
-import { GraphQLClient, gql } from 'graphql-request';
-
-const DEFAULT_ENDPOINT = 'https://api.subgraph.somnia.network/api/public/5960cba9-bbe6-46a5-88d8-df408b2cfc58/subgraphs/somnia-staking/v2025-10-16-2/gn';
+import { gql } from 'graphql-request';
+import { getSubgraphClient } from '@/lib/subgraph';
 
 // Attempt a generic validators query; if schema differs, we'll safely fail and return empty
 const VALIDATORS_QUERY = gql`
@@ -34,8 +33,7 @@ export function useValidatorsSubgraph(first: number = 100, skip: number = 0) {
       try {
         setLoading(true);
         setError(null);
-        const endpoint = process.env.NEXT_PUBLIC_STAKING_SUBGRAPH_URL || DEFAULT_ENDPOINT;
-        const client = new GraphQLClient(endpoint);
+        const client = getSubgraphClient();
         const data = await client.request<any>(VALIDATORS_QUERY, { first, skip });
         if (!active) return;
         const list = (data?.validators || []) as SubgraphValidatorRaw[];
