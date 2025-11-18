@@ -32,7 +32,12 @@ export default function Page() {
 
         {/* Centered stage prevents content drifting while bg stays full-width */}
         <div className="relative mx-auto max-w-[1440px] w-full h-full">
-          {/* Center hero content image removed; global background handles hero */}
+          {/* Center hero content image (fixed max width, does not upscale) */}
+          <img
+            src="/assets/hero-QuaEnt.png"
+            alt="Somnia hero"
+            className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 w-full max-w-[1440px] select-none pointer-events-none"
+          />
 
           {/* Join button (positioned similar to Figma/landing) */}
           <div
